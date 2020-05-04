@@ -152,7 +152,8 @@ def process_jobs_(jobs):
 
 
 # Support Ray for snippet 20.10 Passing the job (molecule) to the callback function
-if RAY_SPEC:
+# Skip coverage for optional dependency Ray
+if RAY_SPEC:  # pragma: no cover
     @ray.remote
     def expand_call_ray(kargs):
         """
@@ -220,7 +221,7 @@ def process_jobs_mp(jobs, task=None, num_threads=24):
 
 
 # Support Ray for snippet 20.9.2, pg 312, Example of Asynchronous call to pythons multiprocessing library
-def process_jobs_ray(jobs):
+def process_jobs_ray(jobs):  # pragma: no cover
     """
     Based on Snippet 20.9.2, pg 312, Example of Asynchronous call to pythons multiprocessing library
     Using Ray instead of pythons multiprocessing module
