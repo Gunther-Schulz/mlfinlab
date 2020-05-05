@@ -9,7 +9,7 @@ from mlfinlab.util import mp_pandas_obj
 
 # pylint: disable=invalid-name
 
-def _get_dfc_for_t(series: pd.Series, molecule: list) -> pd.Series:
+def _get_dfc_for_t(series: pd.Series, molecule: list) -> pd.Series:  # pragma: no cover
     """
     Get Chow-Type Dickey-Fuller Test statistics for each index in molecule
 

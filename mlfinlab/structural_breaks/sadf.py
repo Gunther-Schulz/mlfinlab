@@ -10,7 +10,7 @@ from mlfinlab.util.multiprocess import mp_pandas_obj
 
 # pylint: disable=invalid-name
 
-def _get_sadf_at_t(X: pd.DataFrame, y: pd.DataFrame, min_length: int, model: str, phi: float) -> float:
+def _get_sadf_at_t(X: pd.DataFrame, y: pd.DataFrame, min_length: int, model: str, phi: float) -> float:  # pragma: no cover
     """
     Snippet 17.2, page 258. SADF's Inner Loop (get SADF value at t)
 
@@ -56,11 +56,14 @@ def _get_y_x(series: pd.Series, model: str, lags: Union[int, list],
         x['const'] = 1
 
     if model == 'linear':
-        x['trend'] = np.arange(x.shape[0])  # Add t to the model (0, 1, 2, 3, 4, 5, .... t)
+        # Add t to the model (0, 1, 2, 3, 4, 5, .... t)
+        x['trend'] = np.arange(x.shape[0])
         beta_column = 'y_lagged'  # Column which is used to estimate test beta statistics
     elif model == 'quadratic':
-        x['trend'] = np.arange(x.shape[0]) # Add t to the model (0, 1, 2, 3, 4, 5, .... t)
-        x['quad_trend'] = np.arange(x.shape[0]) ** 2 # Add t^2 to the model (0, 1, 4, 9, ....)
+        # Add t to the model (0, 1, 2, 3, 4, 5, .... t)
+        x['trend'] = np.arange(x.shape[0])
+        # Add t^2 to the model (0, 1, 4, 9, ....)
+        x['quad_trend'] = np.arange(x.shape[0]) ** 2
         beta_column = 'y_lagged'  # Column which is used to estimate test beta statistics
     elif model == 'sm_poly_1':
         y = series.loc[y.index]
@@ -139,7 +142,7 @@ def get_betas(X: pd.DataFrame, y: pd.DataFrame) -> Tuple[np.array, np.array]:
 
 
 def _sadf_outer_loop(X: pd.DataFrame, y: pd.DataFrame, min_length: int, model: str, phi: float,
-                     molecule: list) -> pd.Series:
+                     molecule: list) -> pd.Series:  # pragma: no cover
     """
     This function gets SADF for t times from molecule
 

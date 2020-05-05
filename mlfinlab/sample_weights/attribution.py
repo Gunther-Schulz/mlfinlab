@@ -9,7 +9,7 @@ from mlfinlab.sampling.concurrent import num_concurrent_events, get_av_uniquenes
 from mlfinlab.util.multiprocess import mp_pandas_obj
 
 
-def _apply_weight_by_return(label_endtime, num_conc_events, close_series, molecule):
+def _apply_weight_by_return(label_endtime, num_conc_events, close_series, molecule):  # pragma: no cover
     """
     Snippet 4.10, page 69, Determination of Sample Weight by Absolute Return Attribution
     Derives sample weights based on concurrency and return. Works on a set of
@@ -27,7 +27,8 @@ def _apply_weight_by_return(label_endtime, num_conc_events, close_series, molecu
 
     for t_in, t_out in label_endtime.loc[weights.index].iteritems():
         # Weights depend on returns and label concurrency
-        weights.loc[t_in] = (ret.loc[t_in:t_out] / num_conc_events.loc[t_in:t_out]).sum()
+        weights.loc[t_in] = (ret.loc[t_in:t_out] /
+                             num_conc_events.loc[t_in:t_out]).sum()
     return weights.abs()
 
 
@@ -48,7 +49,8 @@ def get_weights_by_return(triple_barrier_events, close_series, num_threads=5):
 
     num_conc_events = mp_pandas_obj(num_concurrent_events, ('molecule', triple_barrier_events.index), num_threads,
                                     close_series_index=close_series.index, label_endtime=triple_barrier_events['t1'])
-    num_conc_events = num_conc_events.loc[~num_conc_events.index.duplicated(keep='last')]
+    num_conc_events = num_conc_events.loc[~num_conc_events.index.duplicated(
+        keep='last')]
     num_conc_events = num_conc_events.reindex(close_series.index).fillna(0)
     weights = mp_pandas_obj(_apply_weight_by_return, ('molecule', triple_barrier_events.index), num_threads,
                             label_endtime=triple_barrier_events['t1'], num_conc_events=num_conc_events,
@@ -76,7 +78,8 @@ def get_weights_by_time_decay(triple_barrier_events, close_series, num_threads=5
 
     # Apply piecewise-linear decay to observed uniqueness
     # Newest observation gets weight=1, oldest observation gets weight=decay
-    av_uniqueness = get_av_uniqueness_from_triple_barrier(triple_barrier_events, close_series, num_threads)
+    av_uniqueness = get_av_uniqueness_from_triple_barrier(
+        triple_barrier_events, close_series, num_threads)
     decay_w = av_uniqueness['tW'].sort_index().cumsum()
     if decay >= 0:
         slope = (1 - decay) / decay_w.iloc[-1]

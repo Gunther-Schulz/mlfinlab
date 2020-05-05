@@ -21,12 +21,13 @@ def _get_values_diff(test_type, series, index, ind):
     elif test_type == 'two_sided':
         values_diff = abs(series.loc[index] - series.loc[ind])
     else:
-        raise ValueError('Test type is unknown: can be either one_sided or two_sided')
+        raise ValueError(
+            'Test type is unknown: can be either one_sided or two_sided')
 
     return values_diff
 
 
-def _get_s_n_for_t(series: pd.Series, test_type: str, molecule: list) -> pd.Series:
+def _get_s_n_for_t(series: pd.Series, test_type: str, molecule: list) -> pd.Series:  # pragma: no cover
     """
     Get maximum S_n_t value for each value from molecule for Chu-Stinchcombe-White test
     :param series: (pd.Series) to get statistics for
@@ -35,7 +36,8 @@ def _get_s_n_for_t(series: pd.Series, test_type: str, molecule: list) -> pd.Seri
     :return: (pd.Series) of statistics
     """
 
-    s_n_t_series = pd.DataFrame(index=molecule, columns=['stat', 'critical_value'])
+    s_n_t_series = pd.DataFrame(index=molecule, columns=[
+                                'stat', 'critical_value'])
     for index in molecule:
 
         series_t = series.loc[:index]
@@ -51,13 +53,15 @@ def _get_s_n_for_t(series: pd.Series, test_type: str, molecule: list) -> pd.Seri
         for ind in series_t.index[:-1]:
             values_diff = _get_values_diff(test_type, series, index, ind)
             temp_integer_index = series_t.index.get_loc(ind)
-            s_n_t = 1 / (sigma_sq_t * np.sqrt(integer_index - temp_integer_index)) * values_diff
+            s_n_t = 1 / (sigma_sq_t * np.sqrt(integer_index -
+                                              temp_integer_index)) * values_diff
             if s_n_t > max_s_n_value:
                 max_s_n_value = s_n_t
                 max_s_n_critical_value = np.sqrt(
                     4.6 + np.log(integer_index - temp_integer_index))  # 4.6 is b_a estimate derived via Monte-Carlo
 
-        s_n_t_series.loc[index, ['stat', 'critical_value']] = max_s_n_value, max_s_n_critical_value
+        s_n_t_series.loc[index, ['stat', 'critical_value']
+                         ] = max_s_n_value, max_s_n_critical_value
     return s_n_t_series
 
 
@@ -71,7 +75,8 @@ def get_chu_stinchcombe_white_statistics(series: pd.Series, test_type: str = 'on
     :param num_threads: (int) number of cores
     :return: (pd.Series) of statistics
     """
-    molecule = series.index[2:series.shape[0]]  # For the first two values we don't have enough info
+    molecule = series.index[2:series.shape[0]
+                            ]  # For the first two values we don't have enough info
 
     s_n_t_series = mp_pandas_obj(func=_get_s_n_for_t,
                                  pd_obj=('molecule', molecule),
