@@ -66,7 +66,6 @@ def nested_parts(num_atoms, num_threads, upper_triangle=False):
 
 # Snippet 20.7 (page 310), The mpPandasObj, used at various points in the book
 def mp_pandas_obj(func, pd_obj, num_threads=24, mp_batches=1, lin_mols=True, **kargs):
-    # pylint: too-many-branches
     """
     Snippet 20.7 (page 310), The mpPandasObj, used at various points in the book
 
