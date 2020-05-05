@@ -96,64 +96,75 @@ class TestChapter3(unittest.TestCase):
         self.data.index = self.data.index.tz_localize(tz='US/Eastern')
         daily_vol = get_daily_vol(close=self.data['close'], lookback=100)
         cusum_events = cusum_filter(self.data['close'], threshold=0.02)
-        vertical_barriers = add_vertical_barrier(t_events=cusum_events, close=self.data['close'], num_days=1)
+        vertical_barriers = add_vertical_barrier(
+            t_events=cusum_events, close=self.data['close'], num_days=1)
 
         # No meta-labeling
-        triple_barrier_events = get_events(close=self.data['close'],
-                                           t_events=cusum_events,
-                                           pt_sl=[1, 1],
-                                           target=daily_vol,
-                                           min_ret=0.005,
-                                           num_threads=3,
-                                           vertical_barrier_times=vertical_barriers,
-                                           side_prediction=None)
+        for _ in range(100):
+            triple_barrier_events = get_events(close=self.data['close'],
+                                               t_events=cusum_events,
+                                               pt_sl=[1, 1],
+                                               target=daily_vol,
+                                               min_ret=0.005,
+                                               num_threads=3,
+                                               vertical_barrier_times=vertical_barriers,
+                                               side_prediction=None)
 
         # Test that the events are the same as expected (naive test)
         self.assertTrue(triple_barrier_events.shape == (8, 4))  # Assert shape
 
         # Assert that targets match expectations
-        self.assertTrue(triple_barrier_events.iloc[0, 1] == 0.010166261175903357)
-        self.assertTrue(triple_barrier_events.iloc[-1, 1] == 0.006455887663302871)
+        self.assertTrue(
+            triple_barrier_events.iloc[0, 1] == 0.010166261175903357)
+        self.assertTrue(
+            triple_barrier_events.iloc[-1, 1] == 0.006455887663302871)
 
         # Assert start of triple barrier event aligns with cusum_filter
-        self.assertTrue(np.all(triple_barrier_events.index == cusum_events[1:]))
+        self.assertTrue(
+            np.all(triple_barrier_events.index == cusum_events[1:]))
 
         # ----------------------
         # With meta-labeling
         self.data['side'] = 1
-        meta_labeled_events = get_events(close=self.data['close'],
-                                         t_events=cusum_events,
-                                         pt_sl=[1, 1],
-                                         target=daily_vol,
-                                         min_ret=0.005,
-                                         num_threads=3,
-                                         vertical_barrier_times=vertical_barriers,
-                                         side_prediction=self.data['side'])
+        for _ in range(100):
+            meta_labeled_events = get_events(close=self.data['close'],
+                                             t_events=cusum_events,
+                                             pt_sl=[1, 1],
+                                             target=daily_vol,
+                                             min_ret=0.005,
+                                             num_threads=3,
+                                             vertical_barrier_times=vertical_barriers,
+                                             side_prediction=self.data['side'])
 
         # Assert that the two different events are the the same as they are generated using same data
-        self.assertTrue(np.all(meta_labeled_events['t1'] == triple_barrier_events['t1']))
-        self.assertTrue(np.all(meta_labeled_events['trgt'] == triple_barrier_events['trgt']))
+        self.assertTrue(
+            np.all(meta_labeled_events['t1'] == triple_barrier_events['t1']))
+        self.assertTrue(
+            np.all(meta_labeled_events['trgt'] == triple_barrier_events['trgt']))
 
         # Assert shape
         self.assertTrue(meta_labeled_events.shape == (8, 5))
 
         # ----------------------
         # No vertical barriers
-        no_vertical_events = get_events(close=self.data['close'],
-                                        t_events=cusum_events,
-                                        pt_sl=[1, 1],
-                                        target=daily_vol,
-                                        min_ret=0.005,
-                                        num_threads=3,
-                                        vertical_barrier_times=False,
-                                        side_prediction=None)
+        for _ in range(100):
+            no_vertical_events = get_events(close=self.data['close'],
+                                            t_events=cusum_events,
+                                            pt_sl=[1, 1],
+                                            target=daily_vol,
+                                            min_ret=0.005,
+                                            num_threads=3,
+                                            vertical_barrier_times=False,
+                                            side_prediction=None)
 
         # Assert targets match other events trgts
-        self.assertTrue(np.all(triple_barrier_events['trgt'] == no_vertical_events['trgt']))
+        self.assertTrue(
+            np.all(triple_barrier_events['trgt'] == no_vertical_events['trgt']))
         self.assertTrue(no_vertical_events.shape == (8, 4))
 
         # Previously the vertical barrier was touched twice, assert that those events aren't included here
-        self.assertTrue((no_vertical_events['t1'] != triple_barrier_events['t1']).sum() == 2)
+        self.assertTrue(
+            (no_vertical_events['t1'] != triple_barrier_events['t1']).sum() == 2)
 
     def test_triple_barrier_labeling(self):
         """
@@ -162,39 +173,44 @@ class TestChapter3(unittest.TestCase):
         """
         daily_vol = get_daily_vol(close=self.data['close'], lookback=100)
         cusum_events = cusum_filter(self.data['close'], threshold=0.02)
-        vertical_barriers = add_vertical_barrier(t_events=cusum_events, close=self.data['close'], num_days=1)
+        vertical_barriers = add_vertical_barrier(
+            t_events=cusum_events, close=self.data['close'], num_days=1)
 
         # ----------------------
         # Assert 0 labels are generated if vertical barrier hit
-        triple_barrier_events = get_events(close=self.data['close'],
-                                           t_events=cusum_events,
-                                           pt_sl=[1, 1],
-                                           target=daily_vol,
-                                           min_ret=0.005,
-                                           num_threads=3,
-                                           vertical_barrier_times=vertical_barriers,
-                                           side_prediction=None)
+        for _ in range(100):
+            triple_barrier_events = get_events(close=self.data['close'],
+                                               t_events=cusum_events,
+                                               pt_sl=[1, 1],
+                                               target=daily_vol,
+                                               min_ret=0.005,
+                                               num_threads=3,
+                                               vertical_barrier_times=vertical_barriers,
+                                               side_prediction=None)
 
         triple_labels = get_bins(triple_barrier_events, self.data['close'])
-        self.assertTrue(np.all(triple_labels[np.abs(triple_labels['ret']) < triple_labels['trgt']]['bin'] == 0))
+        self.assertTrue(np.all(triple_labels[np.abs(
+            triple_labels['ret']) < triple_labels['trgt']]['bin'] == 0))
 
         # Assert meta labeling works
         self.data['side'] = 1
-        triple_barrier_events = get_events(close=self.data['close'],
-                                           t_events=cusum_events,
-                                           pt_sl=[1, 1],
-                                           target=daily_vol,
-                                           min_ret=0.005,
-                                           num_threads=3,
-                                           vertical_barrier_times=vertical_barriers,
-                                           side_prediction=self.data['side'])
+        for _ in range(100):
+            triple_barrier_events = get_events(close=self.data['close'],
+                                               t_events=cusum_events,
+                                               pt_sl=[1, 1],
+                                               target=daily_vol,
+                                               min_ret=0.005,
+                                               num_threads=3,
+                                               vertical_barrier_times=vertical_barriers,
+                                               side_prediction=self.data['side'])
 
         triple_labels = get_bins(triple_barrier_events, self.data['close'])
 
         # Label 1 if made money, else 0
         condition1 = triple_labels['ret'] > 0
         condition2 = triple_labels['ret'].abs() > triple_labels['trgt']
-        self.assertTrue(((condition1 & condition2) == triple_labels['bin']).all())
+        self.assertTrue(((condition1 & condition2) ==
+                         triple_labels['bin']).all())
 
         # Assert shape
         self.assertTrue(triple_labels.shape == (8, 4))
@@ -213,54 +229,62 @@ class TestChapter3(unittest.TestCase):
 
         target = get_daily_vol(close=self.data['close'], lookback=100)
         cusum_events = cusum_filter(self.data['close'], threshold=0.02)
-        vertical_barriers = add_vertical_barrier(t_events=cusum_events, close=self.data['close'], num_days=1)
+        vertical_barriers = add_vertical_barrier(
+            t_events=cusum_events, close=self.data['close'], num_days=1)
 
         # --------------------------------------------------------------------------------------------------------
         # Assert that the vertical barrier would be reached for all positions due to the high pt level.
         # All labels should be 0. Check the 'bin' column
         pt_sl = [1000, 1000]
-        triple_barrier_events_ptsl = get_events(close=self.data['close'],
-                                                t_events=cusum_events,
-                                                pt_sl=pt_sl,
-                                                target=target,
-                                                min_ret=0.005,
-                                                num_threads=3,
-                                                vertical_barrier_times=vertical_barriers,
-                                                side_prediction=None)
+        for _ in range(100):
+            triple_barrier_events_ptsl = get_events(close=self.data['close'],
+                                                    t_events=cusum_events,
+                                                    pt_sl=pt_sl,
+                                                    target=target,
+                                                    min_ret=0.005,
+                                                    num_threads=3,
+                                                    vertical_barrier_times=vertical_barriers,
+                                                    side_prediction=None)
 
-        triple_labels_ptsl_large = get_bins(triple_barrier_events_ptsl, self.data['close'])
+        triple_labels_ptsl_large = get_bins(
+            triple_barrier_events_ptsl, self.data['close'])
         labels_large = triple_labels_ptsl_large['bin']
         label_count = triple_labels_ptsl_large['bin'].sum()
         self.assertTrue(label_count == 0)
 
         # --------------------------------------------------------------------------------------------------------
         # Assert that the vertical barriers are never reached for very small multiples
-        triple_barrier_events_ptsl = get_events(close=self.data['close'],
-                                                t_events=cusum_events,
-                                                pt_sl=[0.00000001, 0.00000001],
-                                                target=target,
-                                                min_ret=0.005,
-                                                num_threads=3,
-                                                vertical_barrier_times=vertical_barriers,
-                                                side_prediction=None)
+        for _ in range(100):
+            triple_barrier_events_ptsl = get_events(close=self.data['close'],
+                                                    t_events=cusum_events,
+                                                    pt_sl=[
+                                                        0.00000001, 0.00000001],
+                                                    target=target,
+                                                    min_ret=0.005,
+                                                    num_threads=3,
+                                                    vertical_barrier_times=vertical_barriers,
+                                                    side_prediction=None)
 
-        triple_labels_ptsl_small = get_bins(triple_barrier_events_ptsl, self.data['close'])
+        triple_labels_ptsl_small = get_bins(
+            triple_barrier_events_ptsl, self.data['close'])
         labels_small = triple_labels_ptsl_small['bin']
         label_count = (triple_labels_ptsl_small['bin'] == 0).sum()
         self.assertTrue(label_count == 0)
 
         # --------------------------------------------------------------------------------------------------------
         # TP too large and tight stop loss: expected all values less than 1
-        triple_barrier_events_ptsl = get_events(close=self.data['close'],
-                                                t_events=cusum_events,
-                                                pt_sl=[10000, 0.00000001],
-                                                target=target,
-                                                min_ret=0.005,
-                                                num_threads=3,
-                                                vertical_barrier_times=vertical_barriers,
-                                                side_prediction=None)
+        for _ in range(100):
+            triple_barrier_events_ptsl = get_events(close=self.data['close'],
+                                                    t_events=cusum_events,
+                                                    pt_sl=[10000, 0.00000001],
+                                                    target=target,
+                                                    min_ret=0.005,
+                                                    num_threads=3,
+                                                    vertical_barrier_times=vertical_barriers,
+                                                    side_prediction=None)
 
-        labels_no_ones = get_bins(triple_barrier_events_ptsl, self.data['close'])['bin']
+        labels_no_ones = get_bins(
+            triple_barrier_events_ptsl, self.data['close'])['bin']
         self.assertTrue(np.all(labels_no_ones < 1))
 
         # --------------------------------------------------------------------------------------------------------
@@ -273,15 +297,17 @@ class TestChapter3(unittest.TestCase):
         """
         daily_vol = get_daily_vol(close=self.data['close'], lookback=100)
         cusum_events = cusum_filter(self.data['close'], threshold=0.02)
-        vertical_barriers = add_vertical_barrier(t_events=cusum_events, close=self.data['close'], num_days=1)
-        triple_barrier_events = get_events(close=self.data['close'],
-                                           t_events=cusum_events,
-                                           pt_sl=[1, 1],
-                                           target=daily_vol,
-                                           min_ret=0.005,
-                                           num_threads=3,
-                                           vertical_barrier_times=vertical_barriers,
-                                           side_prediction=None)
+        vertical_barriers = add_vertical_barrier(
+            t_events=cusum_events, close=self.data['close'], num_days=1)
+        for _ in range(100):
+            triple_barrier_events = get_events(close=self.data['close'],
+                                               t_events=cusum_events,
+                                               pt_sl=[1, 1],
+                                               target=daily_vol,
+                                               min_ret=0.005,
+                                               num_threads=3,
+                                               vertical_barrier_times=vertical_barriers,
+                                               side_prediction=None)
         triple_labels = get_bins(triple_barrier_events, self.data['close'])
 
         # Drop the 2 zero labels in the set since they are "rare"

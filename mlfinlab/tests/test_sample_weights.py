@@ -33,21 +33,23 @@ class TestSampling(unittest.TestCase):
                                                  num_days=2)
 
         self.data['side'] = 1
-        self.meta_labeled_events = get_events(close=self.data['close'],
-                                              t_events=cusum_events,
-                                              pt_sl=[4, 4],
-                                              target=daily_vol,
-                                              min_ret=0.005,
-                                              num_threads=3,
-                                              vertical_barrier_times=vertical_barriers,
-                                              side_prediction=self.data['side'])
+        for _ in range(100):
+            self.meta_labeled_events = get_events(close=self.data['close'],
+                                                  t_events=cusum_events,
+                                                  pt_sl=[4, 4],
+                                                  target=daily_vol,
+                                                  min_ret=0.005,
+                                                  num_threads=3,
+                                                  vertical_barrier_times=vertical_barriers,
+                                                  side_prediction=self.data['side'])
 
     def test_ret_attribution(self):
         """
         Assert that return attribution length equals triple barrier length, check particular values
         """
         non_nan_meta_labels = self.meta_labeled_events.dropna()
-        ret_weights = get_weights_by_return(non_nan_meta_labels, self.data['close'])
+        ret_weights = get_weights_by_return(
+            non_nan_meta_labels, self.data['close'])
         self.assertTrue(ret_weights.shape[0] == non_nan_meta_labels.shape[0])
         self.assertTrue(abs(ret_weights.iloc[0] - 0.781807) <= 1e5)
         self.assertTrue(abs(ret_weights.iloc[3] - 1.627944) <= 1e5)

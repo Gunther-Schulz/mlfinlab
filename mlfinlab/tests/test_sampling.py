@@ -53,8 +53,9 @@ class TestSampling(unittest.TestCase):
         """
         Assert that average event uniqueness is available for all labels and equals to particular values
         """
-
-        av_un = get_av_uniqueness_from_triple_barrier(self.samples_info_sets, self.price_bars, num_threads=4)
+        for _ in range(100):
+            av_un = get_av_uniqueness_from_triple_barrier(
+                self.samples_info_sets, self.price_bars, num_threads=4)
         # Assert for each label we have uniqueness value
         self.assertTrue(av_un.shape[0] == self.samples_info_sets.shape[0])
         self.assertAlmostEqual(av_un['tW'].iloc[0], 0.66, delta=1e-2)

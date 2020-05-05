@@ -84,14 +84,15 @@ class TestSequentiallyBootstrappedBagging(unittest.TestCase):
         cusum_events = cusum_filter(self.data['close'], threshold=0.005)
         vertical_barriers = add_vertical_barrier(t_events=cusum_events, close=self.data['close'],
                                                  num_hours=2)
-        meta_labeled_events = get_events(close=self.data['close'],
-                                         t_events=cusum_events,
-                                         pt_sl=[1, 4],
-                                         target=daily_vol,
-                                         min_ret=5e-5,
-                                         num_threads=3,
-                                         vertical_barrier_times=vertical_barriers,
-                                         side_prediction=self.data['side'])
+        for _ in range(100):
+            meta_labeled_events = get_events(close=self.data['close'],
+                                             t_events=cusum_events,
+                                             pt_sl=[1, 4],
+                                             target=daily_vol,
+                                             min_ret=5e-5,
+                                             num_threads=3,
+                                             vertical_barrier_times=vertical_barriers,
+                                             side_prediction=self.data['side'])
         meta_labeled_events.dropna(inplace=True)
         labels = get_bins(meta_labeled_events, self.data['close'])
 
