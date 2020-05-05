@@ -1,0 +1,37 @@
+diff --git a/mlfinlab/labeling/trend_scanning.py b/mlfinlab/labeling/trend_scanning.py
+index b377223..96c81c4 100644
+--- a/mlfinlab/labeling/trend_scanning.py
++++ b/mlfinlab/labeling/trend_scanning.py
+@@ -9,7 +9,7 @@ from numba import njit
+ 
+ 
+ @njit
+-def calculate_t_values(subset, min_sample_length, step):
++def calculate_t_values(subset, min_sample_length, step):    # pragma: no cover
+     """
+     For loop for calculating linear regression every n steps.
+ 
+@@ -36,8 +36,8 @@ def calculate_t_values(subset, min_sample_length, step):
+ 
+         # get coefficient and std from linear regression
+         if det == 0:
+-            b_mean = [np.nan]
+-            b_std = [[np.nan, np.nan]]
++            b_mean = np.array([[np.nan]])
++            b_std = np.array([[np.nan, np.nan]])
+         else:
+             xx_inv = np.linalg.inv(xx_)
+             b_mean = xx_inv @ xy_
+diff --git a/requirements.txt b/requirements.txt
+index a055487..a5355d9 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,7 +1,7 @@
+ codecov==2.0.15
+ coverage==4.5.2
+ cvxpy==1.0.25
+-numba==0.46.0
++numba==0.47.0
+ numpy==1.17.3
+ matplotlib==3.1.1
+ pandas==0.25.3

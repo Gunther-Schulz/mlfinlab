@@ -9,7 +9,7 @@ from numba import njit
 
 
 @njit
-def calculate_t_values(subset, min_sample_length, step):
+def calculate_t_values(subset, min_sample_length, step):    # pragma: no cover
     """
     For loop for calculating linear regression every n steps.
 
@@ -36,8 +36,8 @@ def calculate_t_values(subset, min_sample_length, step):
 
         # get coefficient and std from linear regression
         if det == 0:
-            b_mean = [np.nan]
-            b_std = [[np.nan, np.nan]]
+            b_mean = np.array([[np.nan]])
+            b_std = np.array([[np.nan, np.nan]])
         else:
             xx_inv = np.linalg.inv(xx_)
             b_mean = xx_inv @ xy_
