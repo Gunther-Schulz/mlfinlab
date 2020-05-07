@@ -136,18 +136,21 @@ class TestMicrostructuralFeatures(unittest.TestCase):
         plug_in_arr = get_plug_in_entropy(message_array, word_length=1)
         lempel = get_lempel_ziv_entropy(message)
         konto = get_konto_entropy(message)
+        konto1000 = get_konto_entropy(message*1000)
 
         self.assertEqual(plug_in, plug_in_arr)
         self.assertAlmostEqual(shannon, 1.0, delta=1e-3)
         self.assertAlmostEqual(lempel, 0.625, delta=1e-3)
         self.assertAlmostEqual(plug_in, 0.985, delta=1e-3)
         self.assertAlmostEqual(konto, 0.9682, delta=1e-3)
+        self.assertAlmostEqual(konto1000, 0.0133, delta=1e-3)
 
         # Konto entropy boundary conditions
         konto_2 = get_konto_entropy(message, 2)
         _match_length('1101111', 2, 3)
         self.assertAlmostEqual(konto_2, 0.8453, delta=1e-4)
-        self.assertEqual(get_konto_entropy('a'), 0)  # one-character message entropy = 0
+        # one-character message entropy = 0
+        self.assertEqual(get_konto_entropy('a'), 0)
 
     def test_encoding_schemes(self):
         """
