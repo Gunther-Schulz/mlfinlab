@@ -6,6 +6,7 @@ import math
 from typing import Union
 
 import numpy as np
+from numba import njit
 
 
 def get_shannon_entropy(message: str) -> float:
@@ -85,6 +86,7 @@ def get_plug_in_entropy(message: str, word_length: int = None) -> float:
     return out
 
 
+@njit()
 def _match_length(message: str, start_index: int, window: int) -> Union[int, str]:
     """
     Snippet 18.3, Function That Computes the Length of the Longest Match, p.267
@@ -94,7 +96,7 @@ def _match_length(message: str, start_index: int, window: int) -> Union[int, str
     :return: (int, str) match length and matched string
     """
     # Maximum matched length+1, with overlap.
-    sub_str = np.empty(shape=0)
+    sub_str = ''
     for length in range(window):
         msg1 = message[start_index: start_index + length + 1]
         for j in range(start_index - window, start_index):
